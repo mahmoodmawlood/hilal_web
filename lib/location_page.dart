@@ -269,7 +269,7 @@ void _closeApp(){
                                     var locations = box.values.toList();
                                     locations.sort((a,b) => a.label.compareTo(b.label));
                                     return DropdownButton<Location>(
-                                        hint: Text("أختر موقع",
+                                        hint: Text("كركوك",
                                               style: TextStyle(color: Colors.black,fontSize: 13, fontWeight: FontWeight.bold ),
                                         ),
                                         value: _selectedLocation,
@@ -395,7 +395,7 @@ void _closeApp(){
                                                     if (value == null || value.isEmpty) return ' أدخل خط العرض  ';
                                                     final lat = double.tryParse(value);
                                                     if (lat == null || lat < -90 || lat > 90) {
-                                                        return 'أدخل رقم صحيح';
+                                                        return 'أدخل قيمة صحيحة';
                                                     }
                                                     return null;
                                                     }, 
@@ -421,7 +421,7 @@ void _closeApp(){
                                                     if (value == null || value.isEmpty) return  'أدخل خط الطول';
                                                     final lng = double.tryParse(value);
                                                     if (lng == null || lng < -180 || lng > 180) {
-                                                        return 'أدخل رقم صحيح';
+                                                        return 'أدخل قيمة صحيحة';
                                                     }
                                                     return null;
                                                     }, 
@@ -447,7 +447,7 @@ void _closeApp(){
                                                     if (value == null || value.isEmpty) return  'أدخل فرق التوقيت';
                                                     final lng = double.tryParse(value);
                                                     if (lng == null || lng < -12 || lng > 14) {
-                                                        return 'أدخل رقم صحيح';
+                                                        return 'أدخل قيمة صحيحة';
                                                     }
                                                     return null;
                                                     },   
@@ -522,7 +522,7 @@ void _closeApp(){
                                         style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.red.shade100),
                                            minimumSize: MaterialStateProperty.all<Size>(const Size(100,30)),
                                          ),
-                                        child: Text("عودة الى تاريخ النظام", style: 
+                                        child: Text("عودة الى تاريخ اليوم", style: 
                                               TextStyle(color: Colors.black ,fontSize:12,fontWeight: FontWeight.bold),
                                               ),
                                     ),
@@ -538,7 +538,7 @@ void _closeApp(){
                                   style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.red.shade100),
                                     minimumSize: MaterialStateProperty.all<Size>(const Size(100,30)),
                                     ),
-                                  child: Text("اعد موقع وتاريخ النظام", style: 
+                                  child: Text("عودة الى الوضع الاساسي", style: 
                                               TextStyle(color: Colors.black ,fontSize:12,fontWeight: FontWeight.bold),
                                               ),
                                 ),
@@ -852,10 +852,10 @@ List<String> _hijree(int y, int m, int d, double lat, double lng,  double tz){
         List<double> moonloc = moon(gyear2, gmonth2 , gday2.toDouble(), shh, smm, lng, lat, tz); // **** moon loc at sunset
         _azimuth2 = ' الاتجاه  ${moonloc[0]} درجة';
         _elevation2 = " الارتفاع  ${moonloc[1]} درجة";
-        _illum2 = "  نسبة الاضاءة  ${moonloc[2]} %";
+        _illum2 = "   الاضاءة  ${moonloc[2]} %";
         if(moonloc[1]<2.0 && moonloc[2]<0.2){
            _elevation2 = " الارتفاع  ${moonloc[1]} درجة لا يرصد "; 
-           _illum2 = "  نسبة الاضاءة  ${moonloc[2]} % لا يرصد";
+           _illum2 = "   الاضاءة  ${moonloc[2]} % لا يرصد";
          }   
                                               //            moon's birth after sunset
       } else { 
