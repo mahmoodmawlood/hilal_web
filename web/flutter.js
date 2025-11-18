@@ -32,7 +32,7 @@ addEventListener("message", eventListener);
 //# sourceMappingURL=flutter.js.map
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('/my_web_app/flutter_service_worker.js', {
+    navigator.serviceWorker.register('/hilal_web/flutter_service_worker.js', {
       scope: "/hilal_web/"
     });
   });
