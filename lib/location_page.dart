@@ -235,7 +235,7 @@ void _closeApp(){
                                 _buildResultBox( _illum1, Colors.blue.shade200), 
                                 SizedBox(height: 2),
                                 SizedBox(width: 250, height:25, 
-                                  child: Center(child: Text(' يوم ولادة الهلال الجديد',
+                                  child: Center(child: Text(' يوم ولادة الهلال القادم',
                                   style: TextStyle(fontSize:12, fontWeight: FontWeight.bold)))),
                                 _buildResultBox( _BirthDay, Colors. green), //grey.shade200),   
                                 SizedBox(height: 2),
@@ -269,7 +269,7 @@ void _closeApp(){
                                     var locations = box.values.toList();
                                     locations.sort((a,b) => a.label.compareTo(b.label));
                                     return DropdownButton<Location>(
-                                        hint: Text("كركوك",
+                                        hint: Text("   كركوك",
                                               style: TextStyle(color: Colors.black,fontSize: 13, fontWeight: FontWeight.bold ),
                                         ),
                                         value: _selectedLocation,
@@ -395,7 +395,7 @@ void _closeApp(){
                                                     if (value == null || value.isEmpty) return ' أدخل خط العرض  ';
                                                     final lat = double.tryParse(value);
                                                     if (lat == null || lat < -90 || lat > 90) {
-                                                        return 'أدخل قيمة صحيحة';
+                                                        return 'أدخل رقم صحيح';
                                                     }
                                                     return null;
                                                     }, 
@@ -421,7 +421,7 @@ void _closeApp(){
                                                     if (value == null || value.isEmpty) return  'أدخل خط الطول';
                                                     final lng = double.tryParse(value);
                                                     if (lng == null || lng < -180 || lng > 180) {
-                                                        return 'أدخل قيمة صحيحة';
+                                                        return 'أدخل رقم صحيح';
                                                     }
                                                     return null;
                                                     }, 
@@ -447,7 +447,7 @@ void _closeApp(){
                                                     if (value == null || value.isEmpty) return  'أدخل فرق التوقيت';
                                                     final lng = double.tryParse(value);
                                                     if (lng == null || lng < -12 || lng > 14) {
-                                                        return 'أدخل قيمة صحيحة';
+                                                        return 'أدخل رقم صحيح';
                                                     }
                                                     return null;
                                                     },   
@@ -538,7 +538,7 @@ void _closeApp(){
                                   style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.red.shade100),
                                     minimumSize: MaterialStateProperty.all<Size>(const Size(100,30)),
                                     ),
-                                  child: Text("عودة الى الوضع الاساسي", style: 
+                                  child: Text("رجوع الى الحالة الاصلية ", style: 
                                               TextStyle(color: Colors.black ,fontSize:12,fontWeight: FontWeight.bold),
                                               ),
                                 ),
@@ -646,7 +646,7 @@ void _closeApp(){
     
     // 
     if(y%4 == 0){maxdays[1]=29;}
-    if( y > 500 && y < 2500 && m > 0 && m<= 12 && d > 0 && d <= maxdays[m-1] && _hr<24 && _hr>=0 && _min<60 && _min>=0  ) {
+    if( y >=1600 && y <= 2600 && m > 0 && m<= 12 && d > 0 && d <= maxdays[m-1] && _hr<24 && _hr>=0 && _min<60 && _min>=0  ) {
       int k = 0; // int i = 1;
        //   Call moonloc
       List<double> moonloc = moon(y, m , d.toDouble(), _hr, _min, lng, lat, tz);
@@ -717,54 +717,72 @@ List<String> _hijree(int y, int m, int d, double lat, double lng,  double tz){
   glong = glong * rads;
   // DateTime now = DateTime.now();
   int gyear1 = y; int gmonth1 = m; int gday1 = d;
-  //int hour1 = now.hour; int minit = now.minute;
-  //print('${gyear1}  ${gmonth1} ${gday1}');
-  int gyear2 = 0; int gmonth2 = 0; int gday2 = 0;
+  int gyear2 = y; int gmonth2 = m; int gday2 = d;  
+  double birth_time = 0.0;
+  int hr = 0; int min = 0; int sec = 0;
+  int yy = 0; int mm = 0; int dd = 0;
+  int hh;
+  DateTime now = DateTime.now();
+  DateTime previous_moon = now; DateTime present_moon = now; DateTime next_moon = now;
+  DateTime cand_moon = now;
+  List<DateTime> moons = [now,now,now,now,now,now,now];
+  List<double> jday = [0.0,0.0,0.0,0.0,0.0,0.0,0.0];
 
-// do{   // outer cycle, remove it later
 
-  double y_shift = 0.0;
   int h_first = 0;  int h_day = 0; 
-
-  do {                             // convergence inner cycle start
-      y_shift += 0.1;
-      List result = birth(gyear1,gmonth1,gday1, y_shift, zone);
-      gyear2 = result[0];  gmonth2 = result[1]; gday2 = result[2]; 
-      double birth_time = result[3];
-  //  The day and date of birth  and store in global variable _BirthDay
-      double jd1 = julian( gyear2, gmonth2, gday2) + 1.5;
-      int id2 = (jd1 % 7).toInt();
-  //   _BirthDay = '${weekday[id2]} ${gday2} / ${gmonth2} / ${gyear2} م';
-
-                                // get sunset time from function maghrib  ********* ***************
-    double sunset = maghrib(gyear2, gmonth2, gday2, lng, lat, zone);
-     int shh = sunset.floor();                                      //     ***** sunset hourr
-     int smm = ((((sunset - shh)*60)*100).round()/100).floor();     //     ***** sunset minute
-                        //                          moon's birth before sunset ***********   ************
-     if(birth_time < sunset) {       
-        h_first = gday2 + 1;
-        int hh = birth_time.floor();
-        int mm = ((((birth_time - hh)*60)*100).round()/100).floor();
-//        if(birth_time < 12.0){_BirthTime = " الساعة ${hh}:${mm} قبل الظهر ";}
-//        if(birth_time > 12.0){_BirthTime = " الساعة ${hh}:${mm} بعد الظهر ";}
-//        if(birth_time == 12.00){ _BirthTime = " الساعة ${hh}:${mm} ظهرا";}
-        List<double> moonloc = moon(gyear2, gmonth2 , gday2.toDouble(), shh, smm, lng, lat, tz); // **** moon loc at sunset
-//        _azimuth2 = ' الاتجاه  ${moonloc[0]} درجة';
-//        _elevation2 = " الارتفاع  ${moonloc[1]} درجة";
-//        _illum2 = "  نسبة الاضاءة  ${moonloc[2]} %";
-        if(moonloc[1]<2.0 && moonloc[2]<0.2){
-//           _elevation2 = " الارتفاع  ${moonloc[1]} درجة لا يرصد "; 
-//           _illum2 = "  نسبة الاضاءة  ${moonloc[2]} % لا يرصد";
-            h_first = gday2 + 2;
-         }   //*/
-                                              //            moon's birth after sunset
-      } else { h_first = gday2 + 2;
-      //  int hh = birth_time.floor();
-      //  int mm = ((((birth_time - hh)*60)*100).round()/100).floor();
-     //   _BirthTime = " الساعة ${hh}:${mm} بعد الغروب";
-      //  _elevation2 = ' الولادة بعد الغروب';
-     //   _illum2 = ' اليوم التالي مكمل الشهر';
+  double jd = julian(gyear1,gmonth1,gday1);
+  int K0 = ((jd - 2451550.09765) / 29.530588853).round();
+  int kd = -3;
+  for(int i = 0; i <= 6; i += 1){
+    int K = K0 + kd;
+    kd = kd + 1;
+    List result = birth(gyear1, gmonth1, gday1, K , zone);
+      gyear2 = result[0]; gmonth2 = result[1]; gday2 = result[2]; 
+      birth_time = result[3];
+      yy = gyear2; mm = gmonth2; dd = gday2; 
+      hr = birth_time.floor();
+      double min_part = (birth_time - hr)*60.0;
+      min = min_part.floor();
+      double sec_part = (min_part - min)*60.0;
+      sec = sec_part.floor();
+      jday[i] = julian(gyear2, gmonth2, gday2);
+      moons[i] = DateTime (gyear2, gmonth2, gday2, hr, min, sec);
     }
+  for(int i = 6; i>= 0; i -= 1 ){
+    if(jd == jday[i]){
+      present_moon = moons[i];
+      previous_moon = moons[i-1];
+      next_moon = moons[i+1];
+      break;
+    }
+    if(jd > jday[i]){
+      present_moon = moons[i];
+      previous_moon = moons[i-1];
+      next_moon = moons[i+1];
+      break;
+    }
+  }
+
+  cand_moon = present_moon;   
+  do {
+    gyear2 = cand_moon.year; gmonth2 = cand_moon.month; gday2 = cand_moon.day;
+                                // get sunset time from function maghrib 
+    double sunset = maghrib(cand_moon.year, cand_moon.month, cand_moon.day, lng, lat, zone);
+    int shh = sunset.floor();                                      //     ***** sunset hourr
+    int smm = ((((sunset - shh)*60)*100).round()/100).floor();     //     ***** sunset minute
+      List<double> moonloc = moon(cand_moon.year, cand_moon.month , cand_moon.day.toDouble(), shh, smm, 44.392, 35.467, zone); // **** moon loc at sunset  
+      double moonalt = moonloc[1];
+      double illum = moonloc[2];
+       
+    //  print('Birth ${birth_time}, SunSise ${sunset}');
+      if(birth_time >= sunset) { 
+        h_first = cand_moon.day + 2;
+        }
+      if(birth_time<sunset && moonalt>2.0 && illum>0.2){
+        h_first = cand_moon.day + 1;
+      } else { 
+        h_first = cand_moon.day + 2;
+      }
 
     if(h_first > maxdays[gmonth2-1]){
       h_first -= maxdays[gmonth2-1];
@@ -778,7 +796,7 @@ List<String> _hijree(int y, int m, int d, double lat, double lng,  double tz){
     if(gyear1 == gyear2 && gmonth1 == gmonth2 && h_first <= gday1){
       h_day = 1 + gday1 - h_first;
     } 
-     jd1 = 0.0; double jd2 = 0.0;
+    double jd1 = 0.0; double jd2 = 0.0;
     if(gyear1 == gyear2 && gmonth1>gmonth2) {
       jd1 = julian(gyear1, gmonth1, gday1);
       jd2 = julian(gyear2, gmonth2, h_first);
@@ -792,14 +810,17 @@ List<String> _hijree(int y, int m, int d, double lat, double lng,  double tz){
       int interval = (jd1 - jd2).toInt();
       h_day = 1 + interval;
     }
-
-  } while(h_day>30  || h_day == 0);                  // inner cycle end do
+    if(h_day<=0){
+      cand_moon = previous_moon;
+      continue;
+    }
+  }while(h_day<=0);
 
                                       //  get hijre year from function hijree()
   List<int> result1 = hijree(gyear1,gmonth1,gday1);
   int hijre = result1[0]; int i_m = result1[1]; int d_d = result1[2];
-  if((h_day - d_d) >= 25) {i_m = i_m - 1;}
-  if((d_d - h_day) >= 25) {i_m = i_m + 1;}
+  if((h_day - d_d) >= 22) {i_m = i_m - 1;}
+  if((d_d - h_day) >= 22) {i_m = i_m + 1;}
   if(i_m > 12) {
     i_m = 1;
     hijre += 1; 
@@ -814,60 +835,39 @@ List<String> _hijree(int y, int m, int d, double lat, double lng,  double tz){
   String hmonth = '${monthname[i_m-1]}';
 // ****************************************************  
 
-// ***************************** Now calculate the New Moon parameters  *******************
+// ***************************** Now calculate the N Moon parameters  *******************
+  gyear2 = next_moon.year; gmonth2 = next_moon.month; gday2 = next_moon.day;
+  hh = next_moon.hour; mm = next_moon.minute; 
+  sec = next_moon.second;
+  birth_time = hh*1.0 + mm/60.0 + sec/3600.0;
 
-  y_shift = 0.0;
-  int n_day = 0; 
-  double birth_time;
-  do {                             // convergence inner cycle start
-    y_shift = y_shift + 0.1;
-    List result2 = birth(gyear1,gmonth1,gday1, y_shift, zone);
-    gyear2 = result2[0]; gmonth2 = result2[1]; gday2 = result2[2]; 
-    birth_time = result2[3];
-                                // get sunset time from function maghrib 
-     double jd1 = julian(gyear1, gmonth1, gday1);
-     double jd2 = julian(gyear2, gmonth2, gday2);
-      int interval = (jd2 - jd1).toInt();
-      n_day = interval;
-
-      jd1 = julian( gyear2, gmonth2, gday2) + 1.5;
-      int id2 = (jd1 % 7).toInt();
-      _BirthDay = '${weekday[id2]} ${gday2} / ${gmonth2} / ${gyear2} م';
-   // print(' year = ${gyear1}  month = ${gmonth1}  day = ${gday1}');
-   //  print(' y_shift ${y_shift}  year = ${gyear2}  month = ${gmonth2}  day = ${gday2}');
-  //  print('interval = $n_day');
-
-  } while(n_day >= 30) ;                  // inner cycle end do
+  jd1 = julian( gyear2, gmonth2, gday2) + 1.5;
+  int id2 = (jd1 % 7).toInt();
+  _BirthDay = '${weekday[id2]} ${gday2} / ${gmonth2} / ${gyear2} م';
 
   double sunset = maghrib(gyear2, gmonth2, gday2, lng, lat, zone);
   int shh = sunset.floor();                                      //     ***** sunset hourr
   int smm = ((((sunset - shh)*60)*100).round()/100).floor();     //     ***** sunset minute
                        //                          moon's birth before sunset ***********   ************
-     if(birth_time < sunset) {       
-        int hh = birth_time.floor();
-        int mm = ((((birth_time - hh)*60)*100).round()/100).floor();
-        if(birth_time < 12.0){_BirthTime = " الساعة ${hh}:${mm} قبل الظهر ";}
-        if(birth_time > 12.0){_BirthTime = " الساعة ${hh}:${mm} بعد الظهر ";}
-        if(birth_time == 12.00){ _BirthTime = " الساعة ${hh}:${mm} ظهرا";}
-        List<double> moonloc = moon(gyear2, gmonth2 , gday2.toDouble(), shh, smm, lng, lat, tz); // **** moon loc at sunset
-        _azimuth2 = ' الاتجاه  ${moonloc[0]} درجة';
-        _elevation2 = " الارتفاع  ${moonloc[1]} درجة";
-        _illum2 = "   الاضاءة  ${moonloc[2]} %";
-        if(moonloc[1]<2.0 && moonloc[2]<0.2){
-           _elevation2 = " الارتفاع  ${moonloc[1]} درجة لا يرصد "; 
-           _illum2 = "   الاضاءة  ${moonloc[2]} % لا يرصد";
-         }   
-                                              //            moon's birth after sunset
-      } else { 
-        int hh = birth_time.floor();
-        int mm = ((((birth_time - hh)*60)*100).round()/100).floor();
-       _BirthTime = " الساعة ${hh}:${mm} بعد الغروب";
-        _elevation2 = ' الولادة بعد الغروب';
-        _illum2 = ' اليوم التالي مكمل الشهر';
-    }
-
-
-
+  if(birth_time < sunset) {       
+    if(birth_time < 12.0){_BirthTime = " الساعة ${hh}:${mm} قبل الظهر ";}
+    if(birth_time > 12.0){_BirthTime = " الساعة ${hh}:${mm} بعد الظهر ";}
+    if(birth_time == 12.00){ _BirthTime = " الساعة ${hh}:${mm} ظهرا";}
+    List<double> moonloc = moon(gyear2, gmonth2 , gday2.toDouble(), shh, smm, lng, lat, tz); // **** moon loc at sunset
+    if(moonloc[1] > 2.0 && moonloc[2] > 0.2){ 
+    _azimuth2 = ' الاتجاه  ${moonloc[0]} درجة';
+    _elevation2 = " الارتفاع  ${moonloc[1]} درجة";
+    _illum2 = "  نسبة الاضاءة  ${moonloc[2]} %";
+    } else { 
+        _elevation2 = " الارتفاع  ${moonloc[1]} درجة لا يرصد "; 
+        _illum2 = "  نسبة الاضاءة  ${moonloc[2]} % لا يرصد";
+    }   
+  }                                    //      birht after sunset
+    if(birth_time >= sunset){
+    _BirthTime = " الساعة ${hh}:${mm} بعد الغروب";
+    _elevation2 = ' الولادة بعد الغروب';
+    _illum2 = ' اليوم التالي مكمل الشهر';
+  }
 
   return[hyear,hmonth,'$h_day',wday];  // this is the Hijree date info
   
@@ -959,17 +959,19 @@ double julian(int year, int month, int day) {
 // ----------------- End of Julian function
 
             // BIRTH ROUTINE  moon Birth day and time
-List<dynamic> birth(int gyear1, int gmonth1,int gday1, double y_shift, double zone) {
+List<dynamic> birth(int gyear1, int gmonth1,int gday1, int K, double zone) {
   double year = gyear1.toDouble();
   double month = gmonth1.toDouble();
   double day = gday1.toDouble();
-  double t = (year - 2000.0)/100.0;
-  double dt = 0.0;
-  if(year <948.0) { dt = 2177.0 + 497*t + 44.1*t*t;}
-  if(year > 948.0){ dt = 102.0 + t*(102.0 + 25.3*t); } 
-	if(year >= 2000.0 && year <= 2100.0) { dt = dt + 0.37*(year - 2100.0);}
-  year = year + (month + 1.0 - y_shift)/12.0;
-  int K = ((year - 2000.0)*12.3685).floor();
+    /*  double t = (year - 2000.0)/100.0;
+      double dt = 0.0;
+    //  if(year <948.0) { dt = 2177.0 + 497*t + 44.1*t*t;}
+      if(year > 948.0){ dt = 102.0 + t*(102.0 + 25.3*t); } 
+      if(year >= 2000.0 && year <= 2100.0) { dt = dt + 0.37*(year - 2100.0);}
+      year = year + (month + 1.0 - y_shift)/12.0;
+      
+      int K = ((year - 2000.0)*12.3685).floor();
+    */
   double TT = K/1236.85;
   double E = 1.0 - 0.0025160*TT - 0.00000740*TT*TT;
 	double MS = 2.55340 + 29.10535670*K - .00000140*TT*TT - .000000110*TT*TT*TT;
@@ -992,8 +994,11 @@ List<dynamic> birth(int gyear1, int gmonth1,int gday1, double y_shift, double zo
 	double A12= 161.720 + 24.1981540*K;
 	double A13= 239.560 + 25.5130990*K;
 	double A14= 331.550 + 3.59251800*K;
-	double JDE = 2451550.097660 + 29.5305888610*K + 0.000154370*TT*TT - 0.000000150*TT*TT*TT 
+//	double JDE = 2451550.097660 + 29.5305888610*K + 0.000154370*TT*TT - 0.000000150*TT*TT*TT 
+//			+ 0.000000000730*TT*TT*TT*TT;
+	double JDE = 2451550.097650 + 29.5305888530*K + 0.00013370*TT*TT - 0.000000150*TT*TT*TT 
 			+ 0.000000000730*TT*TT*TT*TT;
+
 	double CORR1 = -0.40720*SIND(MP) + 0.172410*E*SIND(MS)+0.016080*SIND(2*MP) + 
 			0.010390*SIND(2*F)+0.007390*E*SIND(MP-MS)-0.005140*E*SIND(MP+MS) + 
 			0.002080*E*E*SIND(2*MS) - 0.001110*SIND(MP-2*F)-0.000570*SIND(MP+2*F) + 
@@ -1006,9 +1011,13 @@ List<dynamic> birth(int gyear1, int gmonth1,int gday1, double y_shift, double zo
 	double CORR2 = (325*SIND(A1)+ 165*SIND(A2)+164*SIND(A3)+126*SIND(A4)+110*SIND(A5)+62*SIND(A6) + 
 			60*SIND(A7) + 56*SIND(A8) + 47*SIND(A9)+42*SIND(A10)+40*SIND(A11)+37*SIND(A12) + 
 			35*SIND(A13)+23*SIND(A14))/1000000.0;
-	JDE = JDE + CORR1 + CORR2 + 0.50 + zone/24; // zone/24 is added to make local time
-	int ZZ = JDE.toInt();
-	double FF = JDE - ZZ;
+	JDE = JDE + CORR1 + CORR2; // zone/24 is added later  to make local time
+  double yearApprox = 2000.0 + (JDE - 2451545.0) / 365.2425;
+  double dt = deltaTSeconds(yearApprox);
+  double JD = JDE - dt / 86400.0;
+  JD = JD + 0.5 + zone/24.0;   // now it is local JD
+	int ZZ = JD.toInt();
+	double FF = JD - ZZ;
   int AA = 0;
   if(ZZ < 2299161){
     AA = ZZ;
@@ -1409,6 +1418,60 @@ double ACOSD(double x){
     return acos(x)*180.0/pi;
 }
 
+double deltaTSeconds(double year) {
+  // year is decimal year, e.g. 1071.5
+  if (year < -500) {
+    double u = (year - 1820.0) / 100.0;
+    return -20.0 + 32.0 * u * u;
+  } else if (year < 500) {
+    double u = year / 100.0;
+    return 10583.6 - 1014.41 * u + 33.78311 * u * u - 5.952053 * pow(u, 3)
+        - 0.1798452 * pow(u, 4) + 0.022174192 * pow(u, 5) + 0.0090316521 * pow(u, 6);
+  } else if (year < 1600) {
+    double u = (year - 1000.0) / 100.0;
+    return 1574.2 - 556.01 * u + 71.23472 * u * u + 0.319781 * pow(u, 3)
+        - 0.8503463 * pow(u, 4) - 0.005050998 * pow(u, 5) + 0.0083572073 * pow(u, 6);
+  } else if (year < 1700) {
+    double t = year - 1600.0;
+    return 120.0 - 0.9808 * t - 0.01532 * t * t + pow(t, 3) / 7129.0;
+  } else if (year < 1800) {
+    double t = year - 1700.0;
+    return 8.83 + 0.1603 * t - 0.0059285 * t * t + 0.00013336 * pow(t, 3)
+        - pow(t, 4) / 1174000.0;
+  } else if (year < 1860) {
+    double t = year - 1800.0;
+    return 13.72 - 0.332447 * t + 0.0068612 * t * t + 0.0041116 * pow(t, 3)
+        - 0.00037436 * pow(t, 4) + 0.0000121272 * pow(t, 5)
+        - 0.0000001699 * pow(t, 6) + 0.000000000875 * pow(t, 7);
+  } else if (year < 1900) {
+    double t = year - 1860.0;
+    return 7.62 + 0.5737 * t - 0.251754 * t * t + 0.01680668 * pow(t, 3)
+        - 0.0004473624 * pow(t, 4) + pow(t, 5) / 233174.0;
+  } else if (year < 1920) {
+    double t = year - 1900.0;
+    return -2.79 + 1.494119 * t - 0.0598939 * t * t + 0.0061966 * pow(t, 3)
+        - 0.000197 * pow(t, 4);
+  } else if (year < 1941) {
+    double t = year - 1920.0;
+    return 21.20 + 0.84493 * t - 0.076100 * t * t + 0.0020936 * pow(t, 3);
+  } else if (year < 1961) {
+    double t = year - 1950.0;
+    return 29.07 + 0.407 * t - (t * t) / 233.0 + (t * t * t) / 2547.0;
+  } else if (year < 1986) {
+    double t = year - 1975.0;
+    return 45.45 + 1.067 * t - (t * t) / 260.0 - (t * t * t) / 718.0;
+  } else if (year < 2005) {
+    double t = year - 2000.0;
+    return 63.86 + 0.3345 * t - 0.060374 * t * t + 0.0017275 * pow(t, 3)
+        + 0.000651814 * pow(t, 4) + 0.00002373599 * pow(t, 5);
+  } else if (year < 2050) {
+    double t = year - 2000.0;
+    return 62.92 + 0.32217 * t + 0.005589 * t * t;
+  } else {
+    double u = (year - 1820.0) / 100.0;
+    return -20.0 + 32.0 * u * u; // rough extrapolation for years >= 2050
+  }
+}
 
 
 
